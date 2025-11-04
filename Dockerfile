@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# natto_library を取得
+# natto_library を参考にしているため、ひとまずNatto_libraryで試す。
 ARG NATTO_REPO=https://github.com/NITIC-Robot-Club/natto_library.git
 WORKDIR /opt
 RUN git clone --depth 1 ${NATTO_REPO} natto_library
