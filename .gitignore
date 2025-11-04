@@ -1,0 +1,16 @@
+# Build artifacts
+build/
+install/
+log/
+
+# Colcon and ROS
+.colcon*
+
+# Python
+__pycache__/
+*.pyc
+
+# VSCode/IDE
+.vscode/
+.idea/
+.DS_Store
