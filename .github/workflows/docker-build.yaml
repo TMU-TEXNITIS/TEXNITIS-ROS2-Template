@@ -11,7 +11,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE_NAME: ${{ toLower(format('ghcr.io/{0}', github.repository)) }}
+  IMAGE_NAME: ghcr.io/tmu-texnitis/texnitis-ros2-template
 
 jobs:
   build-and-push:
