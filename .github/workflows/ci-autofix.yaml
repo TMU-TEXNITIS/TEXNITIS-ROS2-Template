@@ -12,7 +12,7 @@ permissions:
   packages: read
 
 env:
-  CONTAINER_IMAGE: ${{ toLower(format('ghcr.io/{0}:latest', github.repository)) }}
+  CONTAINER_IMAGE: ghcr.io/tmu-texnitis/texnitis-ros2-template:latest
 
 jobs:
   format-build:
