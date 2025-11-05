@@ -54,6 +54,7 @@ jobs:
 
       - name: Build workspace
         id: colcon-build
+        shell: bash
         run: |
           source /opt/ros/humble/setup.bash
           if [ -d src ]; then
