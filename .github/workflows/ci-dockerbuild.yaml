@@ -1,4 +1,4 @@
-name: Auto format and build
+name: CI - Format and Build
 
 on:
   push:
@@ -14,8 +14,6 @@ permissions:
 jobs:
   format-build:
     runs-on: ubuntu-24.04
-    container:
-      image: ghcr.io/tmu-texnitis/texnitis-ros2-template:latest
 
     steps:
       - name: Checkout repository
@@ -33,10 +31,24 @@ jobs:
           git config --global user.email "actions@github.com"
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
 
+      - name: Build CI container image
+        run: |
+          docker build \
+            --pull \
+            --file Dockerfile \
+            --tag texnitis-navigation-library:ci \
+            .
+
       - name: Run clang-format
         run: |
           if [ -d src ]; then
-            find src -regex '.*\\.\(cpp\|hpp\|h\)' -exec clang-format -i {} +
+            USER_ID=$(id -u)
+            GROUP_ID=$(id -g)
+            docker run --rm \
+              -u "${USER_ID}:${GROUP_ID}" \
+              -v "$GITHUB_WORKSPACE":/home/texnitis/TEXNITIS-Navigation-Library \
+              texnitis-navigation-library:ci \
+              bash -lc "cd /home/texnitis/TEXNITIS-Navigation-Library && find src \( -name '*.cpp' -o -name '*.hpp' -o -name '*.h' \) -exec clang-format -i {} +"
           else
             echo "Skip clang-format (src directory not found)"
           fi
@@ -56,9 +68,14 @@ jobs:
         id: colcon-build
         shell: bash
         run: |
-          source /opt/ros/jazzy/setup.bash
           if [ -d src ]; then
-            colcon build --symlink-install
+            USER_ID=$(id -u)
+            GROUP_ID=$(id -g)
+            docker run --rm \
+              -u "${USER_ID}:${GROUP_ID}" \
+              -v "$GITHUB_WORKSPACE":/home/texnitis/TEXNITIS-Navigation-Library \
+              texnitis-navigation-library:ci \
+              bash -lc "cd /home/texnitis/TEXNITIS-Navigation-Library && source /opt/ros/jazzy/setup.bash && colcon build --symlink-install"
           else
             echo "Skip colcon build (src directory not found)"
           fi
