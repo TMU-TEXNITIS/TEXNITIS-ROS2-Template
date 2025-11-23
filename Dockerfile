@@ -1,4 +1,4 @@
-FROM ros:humble-ros-base
+FROM ros:jazzy-ros-base
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -15,24 +15,17 @@ RUN apt-get update && apt-get install -y \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# natto_library を参考にしているため、ひとまずNatto_libraryで試す。
-ARG NATTO_REPO=https://github.com/NITIC-Robot-Club/natto_library.git
-WORKDIR /opt
-RUN git clone --depth 1 ${NATTO_REPO} natto_library
-
-# rosdep の初期化と依存解決（natto_library 分）
-RUN rosdep update && \
-    rosdep install -y --from-paths /opt/natto_library/src --ignore-src
 
 # プロジェクトワークスペース
-WORKDIR /workspaces/project
-COPY . /workspaces/project
+WORKDIR /home/texnitis/TEXNITIS-Navigation-Library
+COPY . .
 
 SHELL ["/bin/bash", "-c"]
 
-# natto_library をビルド（キャッシュ層を作成）
-RUN source /opt/ros/humble/setup.bash && \
-    colcon build --merge-install --base-paths /opt/natto_library
+# rosdep の初期化と依存解決
+RUN rosdep update && \
+    (rosdep install -y --from-paths src --ignore-src || true)
 
 # エントリーポイント
 CMD ["/bin/bash"]
+WORKDIR /home/texnitis/TEXNITIS-Navigation-Library
